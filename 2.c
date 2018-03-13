@@ -15,7 +15,7 @@ int main(int argc, char const *argv[])
 	if (rank == 0)
 	{
 		data = (int *) malloc(sizeof(int) * sendcount * numtasks);
-		for (int i = 0; i < numtasks; ++i)
+		for (int i = 0; i < numtasks * sendcount; ++i)
 		{
 			data[i] = i + 1;
 		}
