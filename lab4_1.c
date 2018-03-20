@@ -5,6 +5,7 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <math.h>
+typedef enum { false, true } bool;
 
 // Utility function to do modular exponentiation.
 // It returns (x^y) % p
@@ -116,7 +117,7 @@ int main (int argc, char *argv[])
 	double start_time = MPI_Wtime(); 
 	if (rank == source){
 		for (i = start; i <= limit; i+=step){
-			if (isPrime(i) == true) {
+			if (isPrime(i, 10) == true) {
 				pCount++;
 			}
 		}
@@ -126,7 +127,7 @@ int main (int argc, char *argv[])
 		printf("Time: %.2lf\n", end_time - start_time); 
 	} else {
 		for (i = start; i <= limit; i+=step){
-			if (isPrime(i) == true) {
+			if (isPrime(i, 10) == true) {
 				pCount++;
 			}
 		}
