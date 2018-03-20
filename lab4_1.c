@@ -10,7 +10,8 @@ typedef enum { false, true } bool;
 // Utility function to do modular exponentiation.
 // It returns (x^y) % p
 int power(int x, unsigned int y, int p)
-{
+{   
+    // repeated squaring algorithm
     int res = 1;      // Initialize result
     x = x % p;  // Update x if it is more than or
                 // equal to p
@@ -28,24 +29,24 @@ int power(int x, unsigned int y, int p)
 }
  
 // This function is called for all k trials. It returns
-// false if n is composite and returns false if n is
+// false if n is composite and returns true if n is
 // probably prime.
-// d is an odd number such that  d*2<sup>r</sup> = n-1
+// d is an odd number such that  d*2^r = n-1
 // for some r >= 1
-bool miillerTest(int d, int n)
+bool millerTest(int d, int n)
 {
     // Pick a random number in [2..n-2]
     // Corner cases make sure that n > 4
     int a = 2 + rand() % (n - 4);
  
-    // Compute a^d % n
+    // Compute a^d % n --> the 'smallest' starting exponent
     int x = power(a, d, n);
  
     if (x == 1  || x == n-1)
        return true;
  
-    // Keep squaring x while one of the following doesn't
-    // happen
+    // Keep squaring x(i.e., doubling the exponent) 
+    // while one of the following doesn't happen
     // (i)   d does not reach n-1
     // (ii)  (x^2) % n is not 1
     // (iii) (x^2) % n is not n-1
@@ -54,8 +55,8 @@ bool miillerTest(int d, int n)
         x = (x * x) % n;
         d *= 2;
  
-        if (x == 1)      return false;
-        if (x == n-1)    return true;
+        if (x == 1)      return false; // Return composite
+        if (x == n-1)    return true;   // Return probably prime
     }
  
     // Return composite
@@ -77,26 +78,13 @@ bool isPrime(int n, int k)
         d /= 2;
  
     // Iterate given nber of 'k' times
-    for (int i = 0; i < k; i++)
-         if (miillerTest(d, n) == false)
+    int i;
+    for (i = 0; i < k; i++)
+         if (millerTest(d, n) == false)
               return false;
  
     return true;
 }
-/*int isprime(int n) {
-int i,squareroot;
-if (n>10) {
-   squareroot = (int) sqrt((double) n);
-   for (i=3; i<=squareroot; i=i+2)
-      if ((n%i)==0)
-         return 0;
-   return 1;
-   }
-else
-	if (n == 2 || n == 3 || n == 5 || n ==7 ) return 1;
-    else
-    	return 0;
-}*/
 
 int main (int argc, char *argv[])
 {
@@ -117,7 +105,7 @@ int main (int argc, char *argv[])
 	double start_time = MPI_Wtime(); 
 	if (rank == source){
 		for (i = start; i <= limit; i+=step){
-			if (isPrime(i, 10) == true) {
+			if (isPrime(i, 10) == true) { // auxiliary input k = 10; i will be tested 10 times
 				pCount++;
 			}
 		}
