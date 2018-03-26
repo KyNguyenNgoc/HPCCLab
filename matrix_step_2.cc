@@ -1,12 +1,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <omp.h>
+#include <x86intrin.h>
 
 int main(){
   const int n=3000; // This problem scales as n^3. 
                     // This value may need to be adjusted
 
-  double * A = (double*) malloc(sizeof(double)*n*n);
+  double * A = (double *)malloc(sizeof(double)*n*n);
   double * B = (double*) malloc(sizeof(double)*n*n);
   double * C = (double*) malloc(sizeof(double)*n*n);
   
@@ -24,12 +25,13 @@ int main(){
   C[0:n*n]=0.0;
   
   // C = A x B
-  double time = omp_get_wtime();
-  #pragma omp parallel for
+  double time = omp_get_wtime(); 
+  
   for ( int i = 0 ; i < n ; i++){
-    for ( int j = 0 ; j < n ; j++) {
+    for (int j = 0 ; j < n ; j++) {  
+      #pragma omp simd
       for ( int k = 0 ; k < n ; k++) {
-	C[i*n+j] += A[i*n+k]*B[k*n+j];
+	C[i*n+k] += A[i*n+j]*B[j*n+k];
       }
     }
   }
